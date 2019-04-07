@@ -118,15 +118,15 @@ public class ImageRepository {
 
         try {
             transaction.begin();
-            TypedQuery<Image> query = em.createQuery("delete from Image i where i.id=:imageId and i.user.id=:userId", Image.class);
+            TypedQuery<Image> query = em.createQuery("select i from Image i where i.id=:imageId and i.user.id=:userId", Image.class);
             query.setParameter("userId", userId);
             query.setParameter("imageId", imageId);
-            Image image = query.getSingleResult();
+            Image image = (Image) query.getSingleResult();
+            em.remove(image);
             em.flush();
             transaction.commit();
             return image;
         } catch (Exception e) {
-
             transaction.rollback();
             return null;
         }

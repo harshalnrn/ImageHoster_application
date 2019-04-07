@@ -5,11 +5,19 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 
+/**
+ *
+ */
 @Repository
 public class TagRepository {
     @PersistenceUnit(unitName = "imageHoster")
     private EntityManagerFactory emf;
 
+    /**
+     *
+     * @param tag
+     * @return
+     */
     public Tag createTag(Tag tag) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
@@ -24,6 +32,11 @@ public class TagRepository {
         return tag;
     }
 
+    /**
+     *
+     * @param tagName
+     * @return
+     */
     public Tag findTag(String tagName) {
         EntityManager em = emf.createEntityManager();
         try {

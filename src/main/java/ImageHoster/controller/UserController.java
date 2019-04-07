@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-
+/**
+ *
+ */
 @Controller
 public class UserController {
 
@@ -30,6 +32,12 @@ public class UserController {
     //This method declares User type and UserProfile type object
     //Sets the user profile with UserProfile type object
     //Adds User type object to a model and returns 'users/registration.html' file
+
+    /**
+     *
+     * @param model
+     * @return
+     */
     @RequestMapping("users/registration")
     public String registration(Model model) {
 
@@ -45,6 +53,12 @@ public class UserController {
 
     //This controller method is called when the request pattern is of type 'users/registration' and also the incoming request is of POST type
     //This method calls the business logic and after the user record is persisted in the database, directs to login page
+
+    /**
+     *
+     * @param user
+     * @return
+     */
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
     public String registerUser(User user) {
         if (userService.registerUser(user))
@@ -55,6 +69,11 @@ public class UserController {
     }
 
     //This controller method is called when the request pattern is of type 'users/login'
+
+    /**
+     *
+     * @return
+     */
     @RequestMapping("users/login")
     public String login() {
         return "users/login";
@@ -64,6 +83,13 @@ public class UserController {
     //The return type of the business logic is changed to User type instead of boolean type. The login() method in the business logic checks whether the user with entered username and password exists in the database and returns the User type object if user with entered username and password exists in the database, else returns null
     //If user with entered username and password exists in the database, add the logged in user in the Http Session and direct to user homepage displaying all the images in the application
     //If user with entered username and password does not exist in the database, redirect to the same login page
+
+    /**
+     *
+     * @param user
+     * @param session
+     * @return
+     */
     @RequestMapping(value = "users/login", method = RequestMethod.POST)
     public String loginUser(User user, HttpSession session) {
         User existingUser = userService.login(user);
@@ -80,6 +106,13 @@ public class UserController {
     //session is invalidated
     //All the images are fetched from the database and added to the model with 'images' as the key
     //'index.html' file is returned showing the landing page of the application and displaying all the images in the application
+
+    /**
+     *
+     * @param model
+     * @param session
+     * @return
+     */
     @RequestMapping(value = "users/logout", method = RequestMethod.POST)
     public String logout(Model model, HttpSession session) {
         session.invalidate();

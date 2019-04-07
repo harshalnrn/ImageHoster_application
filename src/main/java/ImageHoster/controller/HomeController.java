@@ -9,12 +9,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
+/**
+ *
+ */
 @Controller
 public class HomeController {
 
     @Autowired
     private ImageService imageService;
 
+    /**
+     *
+     * @param model
+     * @return
+     */
     @RequestMapping("/")
     public String getAllImages(Model model) {
         List<Image> images = imageService.getAllImages();

@@ -8,6 +8,10 @@ import javax.persistence.*;
 import java.util.List;
 
 //The annotation is a special type of @Component annotation which describes that the class defines a data repository
+
+/**
+ *
+ */
 @Repository
 public class ImageRepository {
 
@@ -21,6 +25,12 @@ public class ImageRepository {
     //Starts a transaction
     //The transaction is committed if it is successful
     //The transaction is rolled back in case of unsuccessful transaction
+
+    /**
+     *
+     * @param newImage
+     * @return
+     */
     public Image uploadImage(Image newImage) {
 
         EntityManager em = emf.createEntityManager();
@@ -40,6 +50,11 @@ public class ImageRepository {
     //The method creates an instance of EntityManager
     //Executes JPQL query to fetch all the images from the database
     //Returns the list of all the images fetched from the database
+
+    /**
+     *
+     * @return
+     */
     public List<Image> getAllImages() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Image> query = em.createQuery("SELECT i from Image i", Image.class);
@@ -52,6 +67,12 @@ public class ImageRepository {
     //Executes JPQL query to fetch the image from the database with corresponding title
     //Returns the image in case the image is found in the database
     //Returns null if no image is found in the database
+
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Image getImageByTitle(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
@@ -71,6 +92,13 @@ public class ImageRepository {
     //The method creates an instance of EntityManager
     //Executes JPQL query to fetch the image from the database with corresponding id
     //Returns the image fetched from the database
+
+    /**
+     *
+     * @param imageId
+     * @param userId
+     * @return
+     */
     public Image getImage(Integer imageId, Integer userId) {
         try {
             EntityManager em = emf.createEntityManager();
@@ -90,6 +118,11 @@ public class ImageRepository {
     //Starts a transaction
     //The transaction is committed if it is successful
     //The transaction is rolled back in case of unsuccessful transaction
+
+    /**
+     *
+     * @param updatedImage
+     */
     public void updateImage(Image updatedImage) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
@@ -112,6 +145,13 @@ public class ImageRepository {
     //If you use remove() method on the object which is not in persistent state, an exception is thrown
     //The transaction is committed if it is successful
     //The transaction is rolled back in case of unsuccessful transaction
+
+    /**
+     *
+     * @param imageId
+     * @param userId
+     * @return
+     */
     public Image deleteImage(Integer imageId, Integer userId) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
@@ -133,7 +173,11 @@ public class ImageRepository {
 
     }
 
-
+    /**
+     *
+     * @param id
+     * @param comment
+     */
     public void saveCommentOfImage(Integer id, Comment comment) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction transaction = em.getTransaction();

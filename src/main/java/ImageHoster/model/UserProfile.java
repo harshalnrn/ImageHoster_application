@@ -1,7 +1,9 @@
 package ImageHoster.model;
 
 import javax.persistence.*;
-
+/**
+ *
+ */
 //@Entity annotation specifies that the corresponding class is a JPA entity
 @Entity
 

@@ -2,9 +2,16 @@ package ImageHoster.service;
 
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public class InputValidationService {
 
-
+    /**
+     *
+     * @param password
+     * @return
+     */
     public boolean checkPasswordStrength(String password) {
 
 

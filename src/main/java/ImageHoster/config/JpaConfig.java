@@ -8,9 +8,15 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+/**
+ *
+ */
 @Configuration
 public class JpaConfig {
-
+    /**
+     *
+     * @return
+     */
     @Bean
     public EntityManagerFactory entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean emfb = new LocalContainerEntityManagerFactoryBean();
@@ -20,6 +26,11 @@ public class JpaConfig {
     }
 
     //can data source object be populateed form persistence xml itself, since the configurations are present there too
+
+    /**
+     *
+     * @return
+     */
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();

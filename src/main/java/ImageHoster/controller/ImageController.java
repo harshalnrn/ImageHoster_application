@@ -16,6 +16,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ *
+ */
 @Controller
 public class ImageController {
 
@@ -25,7 +28,11 @@ public class ImageController {
     @Autowired
     private TagService tagService;
 
-
+    /**
+     *
+     * @param model
+     * @return
+     */
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
     public String getUserImages(Model model) {
@@ -45,6 +52,13 @@ public class ImageController {
     //Also now you need to add the tags of an image in the Model type object
     //Here a list of tags is added in the Model type object
     //this list is then sent to 'images/image.html' file and the tags are displayed
+
+    /**
+     *
+     * @param id
+     * @param model
+     * @return
+     */
     @RequestMapping("/images/{id}")
     public String showImage(@PathVariable("id") Integer id, Model model) {
 
@@ -56,6 +70,14 @@ public class ImageController {
         return "images/image";
     }
 
+    /**
+     *
+     * @param id
+     * @param title
+     * @param comment1
+     * @param httpSession
+     * @return
+     */
     @PostMapping("/image/{id}/{title}/comments")
     public String saveImageComments(@PathVariable("id") Integer id, @PathVariable("title") String title, Comment comment1, HttpSession httpSession) {
 
@@ -66,7 +88,10 @@ public class ImageController {
         return "redirect:/images/{id}";
     }
 
-
+    /**
+     *
+     * @return
+     */
     //This controller method is called when the request pattern is of type 'images/upload'
     //The method returns 'images/upload.html' file
     @RequestMapping("/images/upload")
@@ -84,6 +109,16 @@ public class ImageController {
     //Get the 'tags' request parameter using @RequestParam annotation which is just a string of all the tags
     //Store all the tags in the database and make a list of all the tags using the findOrCreateTags() method
     //set the tags attribute of the image as a list of all the tags returned by the findOrCreateTags() method
+
+    /**
+     *
+     * @param file
+     * @param tags
+     * @param newImage
+     * @param session
+     * @return
+     * @throws IOException
+     */
     @RequestMapping(value = "/images/upload", method = RequestMethod.POST)
     public String createImage(@RequestParam("file") MultipartFile file, @RequestParam("tags") String tags, Image newImage, HttpSession session) throws IOException {
 
@@ -105,6 +140,14 @@ public class ImageController {
 
     //The method first needs to convert the list of all the tags to a string containing all the tags separated by a comma and then add this string in a Model type object
     //This string is then displayed by 'edit.html' file as previous tags of an image
+
+    /**
+     *
+     * @param imageId
+     * @param model
+     * @param httpSession
+     * @return
+     */
     @RequestMapping(value = "/editImage")
     public String editImage(@RequestParam("imageId") Integer imageId, Model model, HttpSession httpSession) {
 
@@ -137,6 +180,17 @@ public class ImageController {
     //The method also receives tags parameter which is a string of all the tags separated by a comma using the annotation @RequestParam
     //The method converts the string to a list of all the tags using findOrCreateTags() method and sets the tags attribute of an image as a list of all the tags
     //  This method invoked on submit in edit.html
+
+    /**
+     *
+     * @param file
+     * @param imageId
+     * @param tags
+     * @param updatedImage
+     * @param session
+     * @return
+     * @throws IOException
+     */
     @RequestMapping(value = "/editImage", method = RequestMethod.PUT)
     public String editImageSubmit(@RequestParam("file") MultipartFile file, @RequestParam("imageId") Integer imageId, @RequestParam("tags") String tags, Image updatedImage, HttpSession session) throws IOException {
         User user = (User) session.getAttribute("loggeduser");
@@ -164,6 +218,14 @@ public class ImageController {
     //This controller method is called when the request pattern is of type 'deleteImage' and also the incoming request is of DELETE type
     //The method calls the deleteImage() method in the business logic passing the id of the image to be deleted
     //Looks for a controller method with request mapping of type '/images'
+
+    /**
+     *
+     * @param imageId
+     * @param httpSession
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
     public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, HttpSession httpSession, Model model) {
         User user = (User) httpSession.getAttribute("loggeduser");
@@ -181,6 +243,13 @@ public class ImageController {
 
 
     //This method converts the image to Base64 format
+
+    /**
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
     private String convertUploadedFileToBase64(MultipartFile file) throws IOException {
         return Base64.getEncoder().encodeToString(file.getBytes());
     }
@@ -188,6 +257,12 @@ public class ImageController {
     //findOrCreateTags() method has been implemented, which returns the list of tags after converting the ‘tags’ string to a list of all the tags and also stores the tags in the database if they do not exist in the database. Observe the method and complete the code where required for this method.
     //Try to get the tag from the database using getTagByName() method. If tag is returned, you need not to store that tag in the database, and if null is returned, you need to first store that tag in the database and then the tag is added to a list
     //After adding all tags to a list, the list is returned
+
+    /**
+     *
+     * @param tagNames
+     * @return
+     */
     private List<Tag> findOrCreateTags(String tagNames) {
         StringTokenizer st = new StringTokenizer(tagNames, ",");
         List<Tag> tags = new ArrayList<Tag>();
@@ -205,7 +280,11 @@ public class ImageController {
         return tags;
     }
 
-
+    /**
+     *
+     * @param tags
+     * @return
+     */
     //The method receives the list of all tags
     //Converts the list of all tags to a single string containing all the tags separated by a comma
     //Returns the string

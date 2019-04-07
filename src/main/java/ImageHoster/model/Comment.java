@@ -3,6 +3,9 @@ package ImageHoster.model;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+/**
+ *
+ */
 @Entity
 @Table(name = "comment")
 public class Comment {

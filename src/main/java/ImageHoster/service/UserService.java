@@ -5,13 +5,20 @@ import ImageHoster.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ *
+ */
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
 
-
+    /**
+     *
+     * @param newUser
+     * @return
+     */
     //Call the registerUser() method in the UserRepository class to persist the user record in the database
     public boolean registerUser(User newUser) {
         boolean flag = false;
@@ -30,6 +37,12 @@ public class UserService {
     //Calls the checkUser() method in the Repository passing the username and password which checks the username and password in the database
     //The Repository returns User type object if user with entered username and password exists in the database
     //Else returns null
+
+    /**
+     *
+     * @param user
+     * @return
+     */
     public User login(User user) {
         User existingUser = userRepository.checkUser(user.getUsername(), user.getPassword());
         if (existingUser != null) {

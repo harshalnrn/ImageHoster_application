@@ -6,6 +6,7 @@ import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
 import ImageHoster.model.UserProfile;
+import ImageHoster.repository.ImageRepository;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.junit.Test;
@@ -13,11 +14,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +30,28 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
+//instantiate controller class
+//inject the class with mocked dependency beans, where mocking takes care of call chains within method.
+//call the controller method to be tested
+//validate response
+
 @RunWith(SpringRunner.class)
-@WebMvcTest(ImageController.class)
+@WebMvcTest(ImageController.class)  // this tells spring to store bean of imageController in context
 public class ImageControllerTest {
     protected MockHttpSession session;
+
 
     @Autowired
     private MockMvc mockMvc;
 
+    /*We use @MockBean to mock away the business logic, since we don’t want to test integration between controller and business logic,
+    but between controller and the HTTP layer.
+    @MockBean automatically replaces the dependent bean of the same type in the application context with a Mockito mock.*/
     @MockBean
     private ImageService imageService;
 
+    @MockBean
+    private ImageRepository imageRepository;
     @MockBean
     private TagService tagService;
 
@@ -87,9 +101,17 @@ public class ImageControllerTest {
         image.setDescription("This image is for testing purpose");
         image.setUser(user);
 
-        Mockito.when(imageService.getImageByTitle(Mockito.anyInt())).thenReturn(image);
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setName("dog");
 
-        this.mockMvc.perform(get("/images/1/new").session(session))
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag);
+        image.setTags(tags);
+
+       Mockito.when(imageService.getImageByTitle(Mockito.anyInt())).thenReturn(image);
+
+        this.mockMvc.perform(get("/images/1").session(session))
                 .andExpect(view().name("images/image"))
                 .andExpect(content().string(containsString("Welcome User. This is the image")));
 
@@ -182,7 +204,7 @@ public class ImageControllerTest {
         tags.add(tag);
         image.setTags(tags);
 
-        Mockito.when(imageService.getImage(Mockito.anyInt(),Mockito.anyInt())).thenReturn(image);
+       Mockito.when(imageService.getImage(Mockito.anyInt(),Mockito.anyInt())).thenReturn(image);
 
         this.mockMvc.perform(get("/editImage")
                 .param("imageId", "1")
@@ -207,36 +229,41 @@ public class ImageControllerTest {
         user.setPassword("password1@");
 
         session = new MockHttpSession();
-        session.setAttribute("loggeduser", user);
+
 
         User user1 = new User();
         UserProfile userProfile1 = new UserProfile();
-        userProfile.setId(2);
-        userProfile.setEmailAddress("p@gmail.com");
-        userProfile.setFullName("Prerna");
-        userProfile.setMobileNumber("9876543210");
-        user.setProfile(userProfile1);
-        user.setId(2);
-        user.setUsername("Prerna");
-        user.setPassword("password1@@");
-
+        userProfile1.setId(2);
+        userProfile1.setEmailAddress("p@gmail.com");
+        userProfile1.setFullName("Prerna");
+        userProfile1.setMobileNumber("9876543210");
+        user1.setProfile(userProfile1);
+        user1.setId(2);
+        user1.setUsername("Prerna");
+        user1.setPassword("password1@@");
+        session.setAttribute("loggeduser", user1);
         Image image = new Image();
         image.setId(1);
         image.setTitle("new");
         image.setDescription("This image is for testing purpose");
-        image.setUser(user1);
+        image.setUser(user);
 
         Tag tag = new Tag();
-        tag.setId(1);
+        tag.setId(2);
         tag.setName("dog");
         List<Tag> tags = new ArrayList<>();
         tags.add(tag);
         image.setTags(tags);
-        Mockito.when(imageService.getImage(Mockito.anyInt(),user.getId())).thenReturn(image);
+
+
+        Mockito.when(imageService.getImage(Mockito.anyInt(),Mockito.anyInt())).thenReturn(null);
+
+        Mockito.when(imageService.getImageByTitle(Mockito.anyInt())).thenReturn(image);
 
         this.mockMvc.perform(get("/editImage")
                 .param("imageId", "1")
                 .session(session))
+                .andExpect(view().name("images/image"))
                 .andExpect(model().attribute("editError", "Only the owner of the image can edit the image"));
     }
 
@@ -268,7 +295,8 @@ public class ImageControllerTest {
         List<Tag> tags = new ArrayList<>();
         tags.add(tag);
         image.setTags(tags);
-        Mockito.when(imageService.getImage(image.getId(),user.getId())).thenReturn(image);
+      Mockito.when(imageService.deleteImage(Mockito.anyInt(),Mockito.anyInt())).thenReturn(image);
+
         this.mockMvc.perform(delete("/deleteImage")
                 .param("imageId", "1")
                 .session(session))
@@ -291,19 +319,19 @@ public class ImageControllerTest {
         user.setPassword("password1@");
 
         session = new MockHttpSession();
-        session.setAttribute("loggeduser", user);
+
 
         User user1 = new User();
         UserProfile userProfile1 = new UserProfile();
-        userProfile.setId(2);
-        userProfile.setEmailAddress("p@gmail.com");
-        userProfile.setFullName("Prerna");
-        userProfile.setMobileNumber("9876543210");
-        user.setProfile(userProfile1);
-        user.setId(2);
-        user.setUsername("Prerna");
-        user.setPassword("password1@@");
-
+        userProfile1.setId(2);
+        userProfile1.setEmailAddress("p@gmail.com");
+        userProfile1.setFullName("Prerna");
+        userProfile1.setMobileNumber("9876543210");
+        user1.setProfile(userProfile1);
+        user1.setId(2);
+        user1.setUsername("Prerna");
+        user1.setPassword("password1@@");
+        session.setAttribute("loggeduser", user1);
         Image image = new Image();
         image.setId(1);
         image.setTitle("new");
@@ -316,11 +344,13 @@ public class ImageControllerTest {
         tags.add(tag);
         image.setTags(tags);
 
-        Mockito.when(imageService.getImage(image.getId(),user.getId())).thenReturn(image);
+        Mockito.when(imageService.deleteImage(Mockito.anyInt(),Mockito.anyInt())).thenReturn(null);
+        Mockito.when(imageService.getImageByTitle(Mockito.anyInt())).thenReturn(image);
 
         this.mockMvc.perform(delete("/deleteImage")
                 .param("imageId", "1")
                 .session(session))
+                .andExpect(view().name("images/image"))
                 .andExpect(model().attribute("deleteError", "Only the owner of the image can delete the image"));
     }
 }

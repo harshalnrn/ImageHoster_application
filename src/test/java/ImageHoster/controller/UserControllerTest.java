@@ -3,8 +3,12 @@ package ImageHoster.controller;
 
 import ImageHoster.model.User;
 import ImageHoster.model.UserProfile;
+import ImageHoster.repository.ImageRepository;
+import ImageHoster.repository.UserRepository;
 import ImageHoster.service.ImageService;
+import ImageHoster.service.InputValidationService;
 import ImageHoster.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -16,7 +20,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,7 +38,13 @@ public class UserControllerTest {
     private UserService userService;
 
     @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
     private ImageService imageService;
+    @MockBean
+    private ImageRepository imageRepository;
+
 
     //This test checks the controller logic for user signup when user requests for a registration form and checks whether the logic returns the html file 'users/registration.html'
     @Test
@@ -60,11 +69,12 @@ public class UserControllerTest {
         user.setUsername("Abhi");
         user.setPassword("password");
 
-
+        Mockito.when(userService.registerUser(Mockito.anyObject())).thenReturn(false); //idea of testing method independently: while testing controllers, explicitly set the response of dependent mocked calls. Service classes would be asserted separately
         this.mockMvc.perform(post("/users/registration")
                 .flashAttr("user", user)
         )
-                .andExpect(model().attribute("passwordTypeError", equalTo("Password must contain atleast 1 alphabet, 1 number & 1 special character")));
+                .andExpect(redirectedUrl("/users/registration"))
+                .andExpect(content().string(containsString("")));
     }
 
     //This test checks the controller logic for user signup when user fills the form and send the POST request to the server with the correct password type and checks whether the logic returns the html file 'users/login.html'
@@ -80,13 +90,13 @@ public class UserControllerTest {
         user.setId(1);
         user.setUsername("Abhi");
         user.setPassword("password1@");
-
-
+        Mockito.when(userService.registerUser(Mockito.anyObject())).thenReturn(true);
         this.mockMvc.perform(post("/users/registration")
                 .flashAttr("user", user)
+               // .content(objectMapper.writeValueAsString(user))
         )
-                .andExpect(view().name("users/login"))
-                .andExpect(content().string(containsString("Please Login:")));
+                .andExpect(redirectedUrl("/users/login"))
+                .andExpect(content().string(containsString("")));
     }
 
     //This test checks the controller logic for user signin when user requests for a signin form where he can enter the username and password and checks whether the logic returns the html file 'users/login.html'
@@ -97,10 +107,13 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("Please Login:")));
     }
 
+    //note here in case your method id redirecting, just check for that and nothing else. (i.e view, content wont be there)
+    //question: cant i also valiate output of re-directed request here itself?
 
     //This test checks the controller logic for user signin when user enters the username and password that has not been registered and sends the POST request to the server and checks whether the logic returns the html file 'users/login.html'
     @Test
     public void signinWithWrongCredentials() throws Exception {
+
         User userSignin = new User();
         userSignin.setUsername("Abhi");
         userSignin.setPassword("password1@");
@@ -118,6 +131,7 @@ public class UserControllerTest {
 
 
     //This test checks the controller logic for user signin when user enters the username and password that has been registered and sends the POST request to the server and checks whether the logic redirects to the request handling method with request mapping of type "/images"
+    @Test
     public void signinWithCorrectCredentials() throws Exception {
         User user = new User();
         UserProfile userProfile = new UserProfile();

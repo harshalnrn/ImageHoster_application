@@ -15,8 +15,9 @@ public class InputValidationService {
     public boolean checkPasswordStrength(String password) {
 
 
-        boolean match = Pattern.matches("[a-zA-z&&0-9&&[^a-zA-z0-9]]", password);
-
+     //  boolean match = password.matches("^(?=.*[a-z]+)(?=.*[0-9]+)$");
+//boolean match=password.matches(".*[a-zA-Z]+.*");
+boolean match=password.matches("(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).*");
         return match;
 
     }
